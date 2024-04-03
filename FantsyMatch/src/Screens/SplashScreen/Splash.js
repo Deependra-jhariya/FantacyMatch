@@ -17,7 +17,7 @@ const Splash = props => {
 
   useEffect(() => {
     setTimeout(() => {
-      props.navigation.navigate('HomeScreen');
+      props.navigation.navigate('ScheduleMatch');
     }, 3000);
   }, []);
 

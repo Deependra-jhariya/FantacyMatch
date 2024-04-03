@@ -8,7 +8,7 @@ const TopHeader = () => {
   return (
     <View style={TopHeaderStyle.mainView}>
       <TouchableOpacity>
-        <Icon name="ios-menu" size={30} color="#000" />
+        <Icon name="ios-menu" size={30} color={_COLORS.DVC_WhiteColor} />
       </TouchableOpacity>
       {/* <Text
         style={TopHeaderStyle.middletext}>
@@ -23,7 +23,11 @@ const TopHeader = () => {
         onPress={() => {
           /* Handle bell icon press */
         }}>
-        <Icon name="ios-notifications-outline" size={30} color="#000" />
+        <Icon
+          name="ios-notifications-outline"
+          size={30}
+          color={_COLORS.DVC_WhiteColor}
+        />
       </TouchableOpacity>
     </View>
   );

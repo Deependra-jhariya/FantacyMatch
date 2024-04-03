@@ -10,6 +10,7 @@ export const navigationRef = createNavigationContainerRef();
 import Splash from '../../Screens/SplashScreen/Splash';
 import HomeScreen from '../../Screens/HomeScreen/HomeScreen';
 import ScheduleMatch from '../../Screens/ScheduleMatch/ScheduleMatch';
+import ScheduleList from '../../Screens/ScheduleList/ScheduleList';
 const Stack = createNativeStackNavigator();
 const AllStackRouts = props => {
   return (
@@ -30,6 +31,11 @@ const AllStackRouts = props => {
         <Stack.Screen
           name={'ScheduleMatch'}
           component={ScheduleMatch}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name={'ScheduleList'}
+          component={ScheduleList}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
