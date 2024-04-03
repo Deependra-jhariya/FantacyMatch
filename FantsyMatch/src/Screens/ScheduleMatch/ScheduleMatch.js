@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View, TextInput, ScrollView} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet, Text, View, TextInput, ScrollView,BackHandler} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import TopHeader from '../../components/Header/TopHeader';
 import {ScheduleMatchStyle} from './ScheduleMatchStyle';
 import CalendarModal from '../../components/CalenderModal/CalenderModal';
@@ -7,15 +7,40 @@ import {_COLORS} from '../../Themes';
 import TimePicker from '../../components/ClockPicker/TimePicker';
 import moment from 'moment';
 import CustomSingleButton from '../../components/CustomButton/CustomSingleButton';
-import { CommonLoader } from '../../components/CommonLoader/CommonLoader';
+import {CommonLoader} from '../../components/CommonLoader/CommonLoader';
+import {fetchUserDataSuccess} from '../../redux/Actions/SetUserActionApi';
+import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 const ScheduleMatch = props => {
-  const[isLoading,setIsLoading]=useState(false)
+  const matchListData = useSelector(state => state?.UserDataReducer?.data);
+  console.log('matchListData.....', matchListData);
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const [firstTeam, setFirstTeam] = useState('');
   const [secondTeam, setSecondTeam] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
   const [matches, setMatches] = useState([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp();
+        refRBSheet.current.close();
+        setIsClick(0);
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, []),
+  );
+  const goBack = () => {
+    props.navigation.pop();
+  };
   // Calender..
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -23,26 +48,37 @@ const ScheduleMatch = props => {
   const handleDayPress = day => {
     setSelectedDate(day.dateString);
   };
-  const handleSchedule = () => {
-    setIsLoading(true)
+  const handleSchedule = async () => {
+    setIsLoading(true);
     const newMatch = {
       teamA: firstTeam,
       teamB: secondTeam,
       date: selectedDate,
       time: currentTime,
     };
-    setMatches([...matches, newMatch]);
-    console.log('matchList...', matches);
-    setIsLoading(false)
-    // Clear input fields after adding match
-    setFirstTeam('');
-    setSecondTeam('');
-    setSelectedDate(null);
-    setCurrentTime('');
+    try {
+      const existingMatches = await AsyncStorage.getItem('matches');
+      let matchesArray = [];
+      if (existingMatches) {
+        matchesArray = JSON.parse(existingMatches);
+      }
+      matchesArray.push(newMatch);
+      await AsyncStorage.setItem('matches', JSON.stringify(matchesArray));
+      dispatch(fetchUserDataSuccess(matchesArray));
+      props.navigation.navigate('ScheduleList');
+      setFirstTeam('');
+      setSecondTeam('');
+      setSelectedDate(null);
+      setCurrentTime('');
+    } catch (error) {
+      console.error('Error saving match:', error);
+    }
+    setIsLoading(false);
   };
   return (
     <View style={ScheduleMatchStyle.container}>
-      <TopHeader />
+      <TopHeader
+      />
       <ScrollView>
         <Text style={ScheduleMatchStyle.ScheduleText}>ScheduleMatch</Text>
         <View style={ScheduleMatchStyle.card}>
@@ -54,8 +90,7 @@ const ScheduleMatch = props => {
               onChangeText={setFirstTeam}
               placeholder="Enter Your First Team"
               placeholderTextColor="#999"
-              keyboardType="number-pad"
-              maxLength={5}
+              keyboardType="ascii-capable"
             />
           </View>
           <View style={ScheduleMatchStyle.inputContainer}>
@@ -66,8 +101,7 @@ const ScheduleMatch = props => {
               onChangeText={setSecondTeam}
               placeholder="Enter Your First Team"
               placeholderTextColor="#999"
-              keyboardType="number-pad"
-              maxLength={5}
+              keyboardType='ascii-capable'
             />
           </View>
           <Text style={[ScheduleMatchStyle.commontext, {marginTop: 15}]}>
@@ -125,11 +159,10 @@ const ScheduleMatch = props => {
             onPress={() => {
               // selectDoc();
               handleSchedule();
-              // props.navigation.navigate("ScheduleList")
             }}
           />
         </View>
-        {isLoading ? <CommonLoader/>:null}
+        {isLoading ? <CommonLoader /> : null}
       </ScrollView>
     </View>
   );

@@ -15,12 +15,12 @@ const TimePicker = (props) => {
     setDatePickerVisibility(false);
     props.getData(date);
     setselectedItime(date);
-    console.warn("A time has been picked: ", date);
+    // console.warn("A time has been picked: ", date);
   };
   const onCanceling = (date) => {
     setDatePickerVisibility(false);
     setselectedItime(date);
-    console.warn("A time has been picked: ", date);
+    // console.warn("A time has been picked: ", date);
   };
 
   return (

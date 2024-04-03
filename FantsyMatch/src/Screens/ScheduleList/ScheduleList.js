@@ -5,51 +5,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ScheduleListStyle} from './ScheduleListStyle';
 import TopHeader from '../../components/Header/TopHeader';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {_COLORS} from '../../Themes';
 import {FlatList} from 'react-native';
-const ScheduleList = () => {
-  const ListData = [
-    {
-      SeriesName: 'World cup',
-      firstTeam: 'India',
-      secondTeam: 'Australia',
-      Date: '28 aug',
-      Time: '11:30 pm',
-    },
-    {
-      SeriesName: 'World cup',
-      firstTeam: 'India',
-      secondTeam: 'Australia',
-      Date: '28 aug',
-      Time: '11:30 pm',
-    },
-    {
-      SeriesName: 'World cup',
-      firstTeam: 'India',
-      secondTeam: 'Australia',
-      Date: '28 aug',
-      Time: '11:30 pm',
-    },
-    {
-      SeriesName: 'World cup',
-      firstTeam: 'India',
-      secondTeam: 'Australia',
-      Date: '28 aug',
-      Time: '11:30 pm',
-    },
-    {
-      SeriesName: 'World cup',
-      firstTeam: 'India',
-      secondTeam: 'Australia',
-      Date: '28 aug',
-      Time: '11:30 pm',
-    },
-  ];
+import {useSelector} from 'react-redux';
+const ScheduleList = (props) => {
+  const matchListData = useSelector(state => state?.UserDataReducer?.data);
+  console.log('matchListData in list.....', matchListData);
 
   const matchListRender = ({item}) => {
     return (
@@ -61,9 +27,9 @@ const ScheduleList = () => {
           </TouchableOpacity>
         </View>
         <View style={ScheduleListStyle.teamsContainer}>
-          <Text style={ScheduleListStyle.teamText}>{'India'}</Text>
+          <Text style={ScheduleListStyle.teamText}>{item?.teamA}</Text>
           <Text style={ScheduleListStyle.vsText}>vs</Text>
-          <Text style={[ScheduleListStyle.teamText]}>{'Australia'}</Text>
+          <Text style={[ScheduleListStyle.teamText]}>{item?.teamB}</Text>
         </View>
         <View style={ScheduleListStyle.dateTimeContainer}>
           <View style={ScheduleListStyle.dateTimeContainer}>
@@ -72,22 +38,29 @@ const ScheduleList = () => {
               size={20}
               color={_COLORS.DVC_BlackColor}
             />
-            <Text style={ScheduleListStyle.dateTimeText}>{'28 Aug'}</Text>
+            <Text style={ScheduleListStyle.dateTimeText}>{item?.date}</Text>
           </View>
-          <Text style={ScheduleListStyle.dateTimeText}>{'11;30 pm'}</Text>
+          <Text style={ScheduleListStyle.dateTimeText}>{item?.time}</Text>
         </View>
       </View>
     );
   };
+  const goBack = () => {
+    props.navigation.pop();
+  };
   return (
     <>
       <View style={ScheduleListStyle.container}>
-        <TopHeader />
+        <TopHeader
+          onPressLeftButton={() => {
+            goBack();
+          }}
+        />
         <Text style={ScheduleListStyle.ScheduleText}>Matches List</Text>
         <ScrollView>
           <FlatList
-            data={ListData}
-            keyExtractor={(item, index) => item.id}
+            data={matchListData}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={matchListRender}
           />
         </ScrollView>

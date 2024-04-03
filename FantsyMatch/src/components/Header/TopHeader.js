@@ -4,16 +4,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {FONTFAMILY, _COLORS} from '../../Themes';
 import {TopHeaderStyle} from './TopHeaderStyle';
 import {IMAGES} from '../../Themes';
-const TopHeader = () => {
+const TopHeader = props => {
   return (
     <View style={TopHeaderStyle.mainView}>
-      <TouchableOpacity>
-        <Icon name="ios-menu" size={30} color={_COLORS.DVC_WhiteColor} />
+      {props?.onPressLeftButton?
+    (  <TouchableOpacity  onPress={props?.onPressLeftButton}>
+        <Icon name="arrow-back" size={30} color={_COLORS.DVC_WhiteColor} />
       </TouchableOpacity>
-      {/* <Text
-        style={TopHeaderStyle.middletext}>
-        {'Header'}
-      </Text> */}
+      ):(
+      <TouchableOpacity>
+      <Icon name="menu" size={30} color={_COLORS.DVC_WhiteColor} />
+    </TouchableOpacity>
+      )
+}
       <Image
         source={IMAGES.Splash}
         style={{width: 100, height: 40}}
