@@ -7,8 +7,9 @@ import {_COLORS} from '../../Themes';
 import TimePicker from '../../components/ClockPicker/TimePicker';
 import moment from 'moment';
 import CustomSingleButton from '../../components/CustomButton/CustomSingleButton';
-
+import { CommonLoader } from '../../components/CommonLoader/CommonLoader';
 const ScheduleMatch = props => {
+  const[isLoading,setIsLoading]=useState(false)
   const [firstTeam, setFirstTeam] = useState('');
   const [secondTeam, setSecondTeam] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
@@ -23,6 +24,7 @@ const ScheduleMatch = props => {
     setSelectedDate(day.dateString);
   };
   const handleSchedule = () => {
+    setIsLoading(true)
     const newMatch = {
       teamA: firstTeam,
       teamB: secondTeam,
@@ -31,6 +33,7 @@ const ScheduleMatch = props => {
     };
     setMatches([...matches, newMatch]);
     console.log('matchList...', matches);
+    setIsLoading(false)
     // Clear input fields after adding match
     setFirstTeam('');
     setSecondTeam('');
@@ -126,6 +129,7 @@ const ScheduleMatch = props => {
             }}
           />
         </View>
+        {isLoading ? <CommonLoader/>:null}
       </ScrollView>
     </View>
   );
