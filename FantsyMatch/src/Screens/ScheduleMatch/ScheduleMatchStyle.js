@@ -45,4 +45,5 @@ export const ScheduleMatchStyle = StyleSheet.create({
   datePickerView: {
     flexDirection: "row",
   },
+  error_text: { color: "red", marginLeft: 10 },
 });
