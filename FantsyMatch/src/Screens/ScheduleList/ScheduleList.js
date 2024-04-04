@@ -5,19 +5,22 @@ import {
   TouchableOpacity,
   View,
   BackHandler,
+  Image,
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {ScheduleListStyle} from './ScheduleListStyle';
 import TopHeader from '../../components/Header/TopHeader';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Octicons from 'react-native-vector-icons/Octicons';
-import {_COLORS} from '../../Themes';
+import {IMAGES, _COLORS} from '../../Themes';
 import {FlatList} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fetchUserDataSuccess} from '../../redux/Actions/SetUserActionApi';
 import {useFocusEffect} from '@react-navigation/native';
 import CustomSingleButton from '../../components/CustomButton/CustomSingleButton';
+import moment from 'moment/moment';
+
 const ScheduleList = props => {
   const dispatch = useDispatch();
   // getItem...
@@ -37,6 +40,7 @@ const ScheduleList = props => {
         await AsyncStorage.setItem('matches', JSON.stringify(updatedList));
         dispatch(fetchUserDataSuccess(updatedList));
         console.log('Item removed successfully');
+        alert("Match removed successfully")
       } else {
         console.log('Item not found in the list');
       }
@@ -50,7 +54,10 @@ const ScheduleList = props => {
       <TouchableOpacity
         style={ScheduleListStyle.card}
         onPress={() => {
-          props.navigation.navigate('ScheduleMatch', {itemId: item.id , editMode:"EditMode"});
+          props.navigation.navigate('ScheduleMatch', {
+            itemId: item.id,
+            editMode: 'EditMode',
+          });
         }}>
         <View style={ScheduleListStyle.WorldcupView}>
           <Text style={ScheduleListStyle.worldCupText}>{'World cup'}</Text>
@@ -63,9 +70,16 @@ const ScheduleList = props => {
           </TouchableOpacity>
         </View>
         <View style={ScheduleListStyle.teamsContainer}>
-          <Text style={ScheduleListStyle.teamText}>{item?.teamA}</Text>
+          <Image source={IMAGES?.Mi} style={ScheduleListStyle.teamLogo} />
           <Text style={ScheduleListStyle.vsText}>vs</Text>
-          <Text style={[ScheduleListStyle.teamText]}>{item?.teamB}</Text>
+          <Image source={IMAGES?.csk} style={ScheduleListStyle.teamLogo} />
+        </View>
+        <View style={ScheduleListStyle.teamsContainer}>
+          <Text style={ScheduleListStyle.teamText}>{item?.teamA}</Text>
+          {/* <Text style={ScheduleListStyle.vsText}>vs</Text> */}
+          <Text style={[ScheduleListStyle.teamText, {textAlign: 'right'}]}>
+            {item?.teamB}
+          </Text>
         </View>
         <View style={ScheduleListStyle.dateTimeContainer}>
           <View style={ScheduleListStyle.dateTimeContainer}>
@@ -74,9 +88,11 @@ const ScheduleList = props => {
               size={20}
               color={_COLORS.DVC_BlackColor}
             />
-            <Text style={ScheduleListStyle.dateTimeText}>{item?.date}</Text>
+            <Text style={ScheduleListStyle.dateTimeText}>{item?.time}</Text>
           </View>
-          <Text style={ScheduleListStyle.dateTimeText}>{item?.time}</Text>
+          <Text style={ScheduleListStyle.dateTimeText}>
+            {moment(item?.date).format('D MMM YYYY')}
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -88,18 +104,16 @@ const ScheduleList = props => {
     <>
       <View style={ScheduleListStyle.container}>
         <TopHeader
-        onPressLeftButton={() => {
-          goBack();
-        }}
+          onPressLeftButton={() => {
+            goBack();
+          }}
         />
         <Text style={ScheduleListStyle.ScheduleText}>Matches List</Text>
-        <ScrollView>
           <FlatList
             data={matchListData}
             keyExtractor={(item, index) => index.toString()}
             renderItem={matchListRender}
           />
-        </ScrollView>
       </View>
     </>
   );

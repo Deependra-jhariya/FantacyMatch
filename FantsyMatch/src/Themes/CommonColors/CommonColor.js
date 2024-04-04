@@ -65,7 +65,7 @@ export const _COLORS = {
   DVC_DarkOrange: "#F48444",
   DVC_yellow: "#FFA800",
   DVC_mostLightGreenColor: "#E9F2E9",
-  DVC_BlueColor: "#336FC3",
+  DVC_BlueColor: "#021A5F",
   DVC_mostLightBlueColor: "#E7F1FF",
   DVC_redColor: "#D30000",
   DVC_ExtraDarkGreen: "#309E63",

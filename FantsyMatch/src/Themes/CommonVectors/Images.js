@@ -4,6 +4,8 @@ export const logos = {
 
 export const IMAGES = {
   Splash: require('../../Assest/Images/TFG.png'),
+  csk: require('../../Assest/Images/download.jpeg'),
+  Mi: require('../../Assest/Images/mi.jpeg'),
 };
 
 export const BANNERS = {

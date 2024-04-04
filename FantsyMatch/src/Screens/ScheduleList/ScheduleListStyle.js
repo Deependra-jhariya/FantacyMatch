@@ -47,7 +47,7 @@ export const ScheduleListStyle = StyleSheet.create({
     marginVertical: 10,
   },
   teamText: {
-    // flex: 1,
+    flex: 1,
     fontSize: 18,
     color: _COLORS.DVC_ExtraLightGrayColor,
     fontFamily: FONTFAMILY.DVC_Medium,
@@ -71,4 +71,10 @@ export const ScheduleListStyle = StyleSheet.create({
     fontFamily: FONTFAMILY.DVC_Medium,
     marginLeft: 20,
   },
+  teamLogo:{
+    height:40,
+    width:40,
+    borderRadius:20,
+    borderColor:_COLORS.DVC_BlueColor
+  }
 });

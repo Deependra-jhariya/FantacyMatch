@@ -5,6 +5,7 @@ import {
   TextInput,
   ScrollView,
   BackHandler,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import TopHeader from '../../components/Header/TopHeader';
@@ -125,25 +126,25 @@ const ScheduleMatch = props => {
 
   const handleSchedule = async () => {
     setIsLoading(true);
-  
+
     try {
       const existingMatches = await AsyncStorage.getItem('matches');
       let matchesArray = [];
       if (existingMatches) {
         matchesArray = JSON.parse(existingMatches);
       }
-  
-      // Check if there's any existing match with the same date and time
+
       const isExistingMatch = matchesArray.some(
         match =>
           match.date === selectedDate &&
           match.time === currentTime &&
-          match.id !== props.route.params.itemId // Exclude the current match if in edit mode
+          match.id !== props.route.params.itemId,
       );
-  
+
       if (isExistingMatch) {
-        // If there's an existing match with the same date and time
-        alert('A match with the same date and time already exists. Please select a different date or time.');
+        alert(
+          'A match with the same date and time already exists. Please select a different date or time.',
+        );
       } else {
         const newItem = {
           id: matchesArray.length + 1,
@@ -152,14 +153,16 @@ const ScheduleMatch = props => {
           date: selectedDate,
           time: currentTime,
         };
-  
+
         if (props.route.params.editMode === 'EditMode') {
           const itemId = props.route.params.itemId;
           const indexToUpdate = matchesArray.findIndex(
             item => item.id === itemId,
           );
+
           if (indexToUpdate !== -1) {
             matchesArray[indexToUpdate] = newItem;
+            alert('schedule edit successfully');
           } else {
             matchesArray.push(newItem);
             dispatch(fetchUserDataSuccess(matchesArray));
@@ -167,6 +170,8 @@ const ScheduleMatch = props => {
           }
         } else {
           matchesArray.push(newItem);
+          alert('Match schedule successfully');
+
         }
         await AsyncStorage.setItem('matches', JSON.stringify(matchesArray));
         dispatch(fetchUserDataSuccess(matchesArray));
@@ -179,10 +184,9 @@ const ScheduleMatch = props => {
     } catch (error) {
       console.error('Error saving match:', error);
     }
-  
+
     setIsLoading(false);
   };
-  
 
   // Validation..
 
@@ -240,7 +244,15 @@ const ScheduleMatch = props => {
       // }}
       />
       <ScrollView>
-        <Text style={ScheduleMatchStyle.ScheduleText}>ScheduleMatch</Text>
+        <View style={ScheduleMatchStyle.scheduleView}>
+          <Text style={ScheduleMatchStyle.ScheduleText}>ScheduleMatch</Text>
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate('ScheduleList');
+            }}>
+            <Text style={ScheduleMatchStyle.ScheduleText}>View All</Text>
+          </TouchableOpacity>
+        </View>
         <View style={ScheduleMatchStyle.card}>
           <View style={ScheduleMatchStyle.inputContainer}>
             <Text style={ScheduleMatchStyle.commontext}>{'First Team'}</Text>

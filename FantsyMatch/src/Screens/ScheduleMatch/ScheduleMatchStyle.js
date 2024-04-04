@@ -4,9 +4,10 @@ export const ScheduleMatchStyle = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scheduleView:{flexDirection:'row',justifyContent:'space-between',marginHorizontal:16},
   ScheduleText:{
-    alignSelf:"center",
-    fontSize:25,
+    // alignSelf:"center",
+    fontSize:20,
     color:_COLORS.DVC_BlueColor,
     fontFamily:FONTFAMILY.DVC_Bold,
     paddingVertical:10
