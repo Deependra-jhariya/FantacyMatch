@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  BackHandler,
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {ScheduleListStyle} from './ScheduleListStyle';
@@ -12,17 +13,52 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {_COLORS} from '../../Themes';
 import {FlatList} from 'react-native';
-import {useSelector} from 'react-redux';
-const ScheduleList = (props) => {
+import {useSelector, useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {fetchUserDataSuccess} from '../../redux/Actions/SetUserActionApi';
+import {useFocusEffect} from '@react-navigation/native';
+import CustomSingleButton from '../../components/CustomButton/CustomSingleButton';
+const ScheduleList = props => {
+  const dispatch = useDispatch();
+  // getItem...
   const matchListData = useSelector(state => state?.UserDataReducer?.data);
   console.log('matchListData in list.....', matchListData);
+  // RemoveItem.
+  const removeItemFromList = async itemIdToRemove => {
+    try {
+      const indexToRemove = matchListData.findIndex(
+        item => item.id === itemIdToRemove,
+      );
+      if (indexToRemove !== -1) {
+        const updatedList = matchListData.filter(
+          (item, index) => index !== indexToRemove,
+        );
+
+        await AsyncStorage.setItem('matches', JSON.stringify(updatedList));
+        dispatch(fetchUserDataSuccess(updatedList));
+        console.log('Item removed successfully');
+      } else {
+        console.log('Item not found in the list');
+      }
+    } catch (error) {
+      console.error('Error removing item from list:', error);
+    }
+  };
 
   const matchListRender = ({item}) => {
     return (
-      <View style={ScheduleListStyle.card}>
+      <TouchableOpacity
+        style={ScheduleListStyle.card}
+        onPress={() => {
+          props.navigation.navigate('ScheduleMatch', {itemId: item.id , editMode:"EditMode"});
+        }}>
         <View style={ScheduleListStyle.WorldcupView}>
           <Text style={ScheduleListStyle.worldCupText}>{'World cup'}</Text>
-          <TouchableOpacity style={ScheduleListStyle.crossIconView}>
+          <TouchableOpacity
+            style={ScheduleListStyle.crossIconView}
+            onPress={() => {
+              removeItemFromList(item?.id);
+            }}>
             <Entypo name="cross" size={20} color={_COLORS.DVC_BlackColor} />
           </TouchableOpacity>
         </View>
@@ -42,7 +78,7 @@ const ScheduleList = (props) => {
           </View>
           <Text style={ScheduleListStyle.dateTimeText}>{item?.time}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
   const goBack = () => {
@@ -52,9 +88,9 @@ const ScheduleList = (props) => {
     <>
       <View style={ScheduleListStyle.container}>
         <TopHeader
-          onPressLeftButton={() => {
-            goBack();
-          }}
+        onPressLeftButton={() => {
+          goBack();
+        }}
         />
         <Text style={ScheduleListStyle.ScheduleText}>Matches List</Text>
         <ScrollView>

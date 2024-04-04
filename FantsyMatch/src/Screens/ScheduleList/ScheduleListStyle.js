@@ -18,7 +18,8 @@ export const ScheduleListStyle = StyleSheet.create({
     fontSize: 25,
     color: _COLORS.DVC_BlueColor,
     fontFamily: FONTFAMILY.DVC_Bold,
-    paddingVertical: 10,
+    // paddingTop:5,
+    marginBottom: 10,
     marginLeft: 16,
   },
   card: {
@@ -61,13 +62,13 @@ export const ScheduleListStyle = StyleSheet.create({
   },
   dateTimeContainer: {
     flexDirection: 'row',
-    justifyContent:'space-between'
+    justifyContent: 'space-between',
   },
   dateTimeText: {
     fontSize: 14,
     color: '#999999',
     color: _COLORS.DVC_BlackColor,
     fontFamily: FONTFAMILY.DVC_Medium,
-    marginLeft:20
+    marginLeft: 20,
   },
 });

@@ -17,7 +17,8 @@ const Splash = props => {
 
   useEffect(() => {
     setTimeout(() => {
-      props.navigation.navigate('ScheduleMatch');
+      props.navigation.navigate('ScheduleMatch',{CreateMode:"CreateMode"});
+      // props.navigation.navigate('ScheduleList');
     }, 3000);
   }, []);
 

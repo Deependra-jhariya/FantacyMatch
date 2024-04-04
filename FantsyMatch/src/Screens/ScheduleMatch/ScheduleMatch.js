@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, TextInput, ScrollView,BackHandler} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  ScrollView,
+  BackHandler,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import TopHeader from '../../components/Header/TopHeader';
 import {ScheduleMatchStyle} from './ScheduleMatchStyle';
@@ -11,10 +18,12 @@ import {CommonLoader} from '../../components/CommonLoader/CommonLoader';
 import {fetchUserDataSuccess} from '../../redux/Actions/SetUserActionApi';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 const ScheduleMatch = props => {
+  const isFocus = useIsFocused();
   const matchListData = useSelector(state => state?.UserDataReducer?.data);
-  console.log('matchListData.....', matchListData);
+  console.log('matchListData schedulematch.....', matchListData);
+
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [firstTeam, setFirstTeam] = useState('');
@@ -23,13 +32,28 @@ const ScheduleMatch = props => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
   const [matches, setMatches] = useState([]);
-
+  useEffect(() => {
+    if (props.route.params.editMode == 'EditMode') {
+      const itemId = props.route.params.itemId;
+      // Find the item with the specified ID
+      const selectedMatch = matchListData.find(item => item.id === itemId);
+      console.log('selectedMatch....', selectedMatch);
+      setFirstTeam(selectedMatch?.teamA);
+      setSecondTeam(selectedMatch?.teamB);
+      setSelectedDate(selectedMatch?.date);
+      setCurrentTime(selectedMatch?.time);
+    } else {
+      props.route.params.CreateMode == 'CreateMode';
+      setFirstTeam('');
+      setSecondTeam('');
+      setSelectedDate(null);
+      setCurrentTime('');
+    }
+  }, [isFocus]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
         BackHandler.exitApp();
-        refRBSheet.current.close();
-        setIsClick(0);
         return true;
       };
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -48,21 +72,65 @@ const ScheduleMatch = props => {
   const handleDayPress = day => {
     setSelectedDate(day.dateString);
   };
+  // const handleSchedule = async () => {
+  //   setIsLoading(true);
+
+  //   try {
+  //     const existingMatches = await AsyncStorage.getItem('matches');
+  //     let matchesArray = [];
+  //     if (existingMatches) {
+  //       matchesArray = JSON.parse(existingMatches);
+  //     }
+  //     const newMatch = {
+  //       id: matchesArray.length + 1,
+  //       teamA: firstTeam,
+  //       teamB: secondTeam,
+  //       date: selectedDate,
+  //       time: currentTime,
+  //     };
+  //     matchesArray.push(newMatch);
+  //     await AsyncStorage.setItem('matches', JSON.stringify(matchesArray));
+  //     dispatch(fetchUserDataSuccess(matchesArray));
+  //     props.navigation.navigate('ScheduleList');
+  //     setFirstTeam('');
+  //     setSecondTeam('');
+  //     setSelectedDate(null);
+  //     setCurrentTime('');
+  //   } catch (error) {
+  //     console.error('Error saving match:', error);
+  //   }
+  //   setIsLoading(false);
+  // };
   const handleSchedule = async () => {
     setIsLoading(true);
-    const newMatch = {
-      teamA: firstTeam,
-      teamB: secondTeam,
-      date: selectedDate,
-      time: currentTime,
-    };
+  
     try {
       const existingMatches = await AsyncStorage.getItem('matches');
       let matchesArray = [];
       if (existingMatches) {
         matchesArray = JSON.parse(existingMatches);
       }
-      matchesArray.push(newMatch);
+      const newItem = {
+        id: matchesArray.length + 1, 
+        teamA: firstTeam,
+        teamB: secondTeam,
+        date: selectedDate,
+        time: currentTime,
+      };
+
+      if (props.route.params.editMode === 'EditMode') {
+        const itemId = props.route.params.itemId;
+        const indexToUpdate = matchesArray.findIndex(item => item.id === itemId);
+        if (indexToUpdate !== -1) {
+          matchesArray[indexToUpdate] = newItem;
+        }else{
+          matchesArray.push(newItem);
+          dispatch(fetchUserDataSuccess(matchesArray));
+          props.navigation.navigate('ScheduleList');
+        }
+      } else {
+        matchesArray.push(newItem);
+      }
       await AsyncStorage.setItem('matches', JSON.stringify(matchesArray));
       dispatch(fetchUserDataSuccess(matchesArray));
       props.navigation.navigate('ScheduleList');
@@ -73,11 +141,16 @@ const ScheduleMatch = props => {
     } catch (error) {
       console.error('Error saving match:', error);
     }
+  
     setIsLoading(false);
   };
+  
   return (
     <View style={ScheduleMatchStyle.container}>
       <TopHeader
+      // onPressLeftButton={() => {
+      //   goBack();
+      // }}
       />
       <ScrollView>
         <Text style={ScheduleMatchStyle.ScheduleText}>ScheduleMatch</Text>
@@ -101,7 +174,7 @@ const ScheduleMatch = props => {
               onChangeText={setSecondTeam}
               placeholder="Enter Your First Team"
               placeholderTextColor="#999"
-              keyboardType='ascii-capable'
+              keyboardType="ascii-capable"
             />
           </View>
           <Text style={[ScheduleMatchStyle.commontext, {marginTop: 15}]}>
@@ -157,7 +230,6 @@ const ScheduleMatch = props => {
             Text_Color={_COLORS.DVC_WhiteColor}
             //   disabled={isLoading ? true : false}
             onPress={() => {
-              // selectDoc();
               handleSchedule();
             }}
           />

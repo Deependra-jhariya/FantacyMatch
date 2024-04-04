@@ -7,7 +7,7 @@ const CommonLoader = props => {
     >
       <ActivityIndicator
         animating={true}
-        color={_COLORS?.DVC_DarkBlueColor}
+        color={_COLORS?.DVC_BlackColor}
         size={'large'}
         style={{alignSelf: 'center'}}
       />
