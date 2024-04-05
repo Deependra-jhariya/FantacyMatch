@@ -294,7 +294,7 @@ const ScheduleMatch = props => {
           <View style={ScheduleMatchStyle.datePickerView}>
             <CalendarModal
               SelectDate={
-                selectedDate ? selectedDate : 'Start date of the lease'
+                selectedDate ? selectedDate : 'Enter your match date.'
               }
               _textInputStyle={{
                 color: selectedDate
